@@ -11,10 +11,10 @@ class StatementParserTest {
     }
 
     @Test
-    fun substitution() {
+    fun substitutionEasy() {
         val c = VarsContainer()
-        c.add("fuck", "you")
+        c.add("kek", "lol")
         val parser = StatementParser(c)
-        print(parser.substitution("\$fuck"))
+        print(parser.substitution("\$kek"))
     }
 }

@@ -13,5 +13,5 @@ fun wcFiles(fileNames: List<String>): String {
 }
 
 fun executeCommand(name: String, args: List<String>, input: String): String {
-
+    return "UNKNOW COMMAND $name"
 }
