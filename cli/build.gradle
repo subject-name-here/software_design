@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.11'
     id 'antlr'
+    id 'application'
 }
 
 group 'ru.iisuslik'
@@ -38,7 +39,9 @@ dependencies {
     antlr "org.antlr:antlr4:4.7.1"
 }
 
-compileKotlin {
+mainClassName = 'ru.iisuslik.cli.MainKt'
+
+        compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
@@ -48,7 +51,7 @@ compileTestKotlin {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'ru.hse.spb.MainKt'
+                'Main-Class': 'ru.iisuslik.cli.MainKt'
         )
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }

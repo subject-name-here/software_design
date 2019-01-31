@@ -16,12 +16,7 @@ commands returns [java.util.List<ru.iisuslik.cli.Command> list]
     ;
 
 command returns [ru.iisuslik.cli.Command value]
-    :   'echo' a=args {$value = new ru.iisuslik.cli.Echo($a.list);}
-        | 'wc' a=args {$value = new ru.iisuslik.cli.Wc($a.list);}
-        | 'cat' a=args {$value = new ru.iisuslik.cli.Cat($a.list);}
-        | 'exit' {$value = new ru.iisuslik.cli.Exit();}
-        | 'pwd' {$value = new ru.iisuslik.cli.Pwd();}
-        | w=word a=args {$value = new ru.iisuslik.cli.Unknown($w.text, $a.list);}
+    :   w=word a=args {$value = ru.iisuslik.cli.Command.build($w.text, $a.list);}
     ;
 
 args returns [java.util.List<String> list]

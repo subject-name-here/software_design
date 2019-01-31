@@ -15,8 +15,8 @@ class Assignment(val name: String, val value: String) : Statement {
 
 class Commands(val commands: List<Command>) : Statement {
     override fun status() = if (commands.size == 1 && commands.first() is Exit)
-                                Executor.Status.EXIT
-                            else Executor.Status.CONTINUE
+        Executor.Status.EXIT
+    else Executor.Status.CONTINUE
 
     override fun execute(varsContainer: VarsContainer) {
         var result = ""
@@ -28,6 +28,20 @@ class Commands(val commands: List<Command>) : Statement {
 }
 
 abstract class Command(protected val name: String, protected val args: List<String>) {
+    companion object {
+        @JvmStatic fun build(name: String, args: List<String>): Command {
+            return when (name) {
+                "echo" -> Echo(args)
+                "wc" -> Wc(args)
+                "cat" -> Cat(args)
+                // Real bash doesn't care too if we pass any args to pwd or exit
+                "pwd" -> Pwd()
+                "exit" -> Exit()
+                else -> External(name, args)
+            }
+        }
+    }
+
     abstract fun execute(input: String): String
 }
 
@@ -57,9 +71,9 @@ class Cat(args: List<String>) : Command("cat", args) {
     }
 }
 
-class Unknown(name: String, args: List<String>) : Command(name, args) {
+class External(name: String, args: List<String>) : Command(name, args) {
     override fun execute(input: String): String {
-        return "UNKNOWN"
+        return executeCommand(name, args)
     }
 }
 
