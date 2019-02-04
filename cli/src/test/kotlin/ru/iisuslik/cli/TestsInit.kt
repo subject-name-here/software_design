@@ -4,12 +4,17 @@ import java.io.File
 
 fun createTestFile(name: String, content: String) {
     val file = File(getRealFileName(name))
-    file.createNewFile()
+    if (!file.exists()) {
+        file.createNewFile()
+    }
     file.writeText(content)
 }
 
 fun deleteTestsFile(name: String) {
-    File(getRealFileName(name)).delete()
+    val file = File(getRealFileName(name))
+    if (file.exists()) {
+        file.delete()
+    }
 }
 
 

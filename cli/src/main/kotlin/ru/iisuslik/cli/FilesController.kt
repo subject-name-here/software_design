@@ -50,6 +50,7 @@ fun executeCommand(name: String, args: List<String>, input: String): String {
     val process = Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
     process.outputStream.bufferedWriter().write(input)
     process.outputStream.close()
+    process.waitFor()
     print(process.errorStream.bufferedReader().readLine() ?: "")
     return process.inputStream.bufferedReader().readText()
 }
