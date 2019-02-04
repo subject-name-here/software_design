@@ -55,10 +55,11 @@ data class Echo(val args: List<String>) : Command {
 
 data class Wc(val args: List<String>) : Command {
     override fun execute(input: String): String {
-        if (args.isEmpty()) {
-            return input
+        return if (args.isEmpty()) {
+            val (linesCount, wordsCount, symbolsCount) = wcInput(input)
+            "$linesCount $wordsCount $symbolsCount"
         } else {
-            return wcFiles(args)
+            wcFiles(args)
         }
     }
 }

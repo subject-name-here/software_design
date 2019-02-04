@@ -100,4 +100,22 @@ class StatementParserTest {
         val parser = StatementParser(c)
         assertEquals("", parser.substitution("\$kek"))
     }
+
+    @Test
+    fun unknownCommand() {
+        assertEquals(getStatement(External("wtf", listOf("-flag", "kek"))),
+            parser.parse("wtf -flag kek"))
+    }
+
+    @Test
+    fun easyPipe() {
+        assertEquals(getStatement(Echo(listOf("kek")), Cat(emptyList())),
+            parser.parse("echo kek | cat"))
+    }
+
+    @Test
+    fun bigPipe() {
+        assertEquals(getStatement(Echo(listOf("kek", "lol")), Cat(emptyList()), External("head", emptyList())),
+            parser.parse("echo kek lol | cat | head"))
+    }
 }

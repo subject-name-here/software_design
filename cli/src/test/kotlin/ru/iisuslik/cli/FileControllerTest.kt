@@ -13,6 +13,7 @@ class FileControllerTest {
         fun createFiles() {
             createTestFile("file1", "content1")
             createTestFile("file2", "content2")
+            createTestFile("file3", "two words")
         }
 
         @AfterClass
@@ -20,6 +21,7 @@ class FileControllerTest {
         fun deleteFiles() {
             deleteTestsFile("file1")
             deleteTestsFile("file2")
+            deleteTestsFile("file3")
         }
     }
 
@@ -38,6 +40,23 @@ class FileControllerTest {
         assertEquals(
             "content1content2",
             catFiles(listOf(getRealFileName("file1"), getRealFileName("file2")))
+        )
+    }
+
+    @Test
+    fun wc() {
+        assertEquals(
+            "${getRealFileName("file3")}: 1 2 9",
+            wcFiles(listOf(getRealFileName("file3")))
+        )
+    }
+
+    @Test
+    fun wcTwoFiles() {
+        assertEquals(
+            "${getRealFileName("file3")}: 1 2 9\n${getRealFileName("file1")}: 1 1 8\n" +
+            "total: 2 3 17",
+            wcFiles(listOf(getRealFileName("file3"), getRealFileName("file1")))
         )
     }
 }
