@@ -1,8 +1,8 @@
 grammar Cli;
 
 statement returns [ru.iisuslik.cli.Statement value]
-    :   a=assignment  {$value = $a.value;}
-        | c=commands   {$value = new ru.iisuslik.cli.Commands($c.list);}
+    :   SPLIT? (a=assignment {$value = $a.value;}
+        | c=commands {$value = new ru.iisuslik.cli.Commands($c.list);}) SPLIT?
     ;
 
 assignment returns [ru.iisuslik.cli.Assignment value]
@@ -12,7 +12,7 @@ assignment returns [ru.iisuslik.cli.Assignment value]
 commands returns [java.util.List<ru.iisuslik.cli.Command> list]
     :   {$list = new java.util.ArrayList<>();}
         c=command {$list.add($c.value);}
-        (' | ' c=command {$list.add($c.value);})*
+        (SPLIT '|' SPLIT c=command {$list.add($c.value);})*
     ;
 
 command returns [ru.iisuslik.cli.Command value]
@@ -21,7 +21,7 @@ command returns [ru.iisuslik.cli.Command value]
 
 args returns [java.util.List<String> list]
     :   {$list = new java.util.ArrayList<>();}
-        (' ' w=word {$list.add($w.text);})*
+        (SPLIT a=arg {$list.add($a.value);})*
 
     ;
 
@@ -37,10 +37,12 @@ word
     ;
 
 string
-    : (LETTER | DIGIT | '.' | '-' | ' ' | '\t' | '|')+
+    : (LETTER | DIGIT | '.' | '-' | ' ' | '!' | '\t' | '|')+
     ;
 
 DIGIT
     : '0'..'9'
     ;
 LETTER: ('a'..'z') | ('A'..'Z');
+
+SPLIT: ' ';

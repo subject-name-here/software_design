@@ -1,57 +1,59 @@
 package ru.iisuslik.cli
 
 interface Statement {
-    fun execute(varsContainer: VarsContainer)
+    fun execute(varsContainer: VarsContainer): String
     fun status(): Executor.Status
 }
 
-class Assignment(val name: String, val value: String) : Statement {
+data class Assignment(val name: String, val value: String) : Statement {
     override fun status() = Executor.Status.CONTINUE
 
-    override fun execute(varsContainer: VarsContainer) {
+    override fun execute(varsContainer: VarsContainer): String {
         varsContainer.add(name, value)
+        return ""
     }
 }
 
-class Commands(val commands: List<Command>) : Statement {
+data class Commands(val commands: List<Command>) : Statement {
     override fun status() = if (commands.size == 1 && commands.first() is Exit)
         Executor.Status.EXIT
     else Executor.Status.CONTINUE
 
-    override fun execute(varsContainer: VarsContainer) {
+    override fun execute(varsContainer: VarsContainer): String {
         var result = ""
         for (command in commands) {
             result = command.execute(result)
         }
-        println(result)
+        return result
     }
 }
 
-abstract class Command(protected val name: String, protected val args: List<String>) {
+interface Command {
     companion object {
-        @JvmStatic fun build(name: String, args: List<String>): Command {
+        @JvmStatic
+        fun build(name: String, args: List<String>): Command {
             return when (name) {
                 "echo" -> Echo(args)
                 "wc" -> Wc(args)
                 "cat" -> Cat(args)
                 // Real bash doesn't care too if we pass any args to pwd or exit
-                "pwd" -> Pwd()
-                "exit" -> Exit()
+                "pwd" -> Pwd
+                "exit" -> Exit
                 else -> External(name, args)
             }
         }
     }
 
-    abstract fun execute(input: String): String
+    fun execute(input: String): String
 }
 
-class Echo(args: List<String>) : Command("echo", args) {
+data class Echo(val args: List<String>) : Command {
     override fun execute(input: String): String {
         return args.joinToString(" ")
     }
 }
 
-class Wc(args: List<String>) : Command("wc", args) {
+data class Wc(val args: List<String>) : Command {
     override fun execute(input: String): String {
         if (args.isEmpty()) {
             return input
@@ -61,7 +63,7 @@ class Wc(args: List<String>) : Command("wc", args) {
     }
 }
 
-class Cat(args: List<String>) : Command("cat", args) {
+data class Cat(val args: List<String>) : Command {
     override fun execute(input: String): String {
         if (args.isEmpty()) {
             return input
@@ -71,19 +73,19 @@ class Cat(args: List<String>) : Command("cat", args) {
     }
 }
 
-class External(name: String, args: List<String>) : Command(name, args) {
+data class External(val name: String, val args: List<String>) : Command {
     override fun execute(input: String): String {
-        return executeCommand(name, args)
+        return executeCommand(name, args, input)
     }
 }
 
-class Exit : Command("exit", emptyList()) {
+object Exit : Command {
     override fun execute(input: String): String {
         return ""
     }
 }
 
-class Pwd : Command("pwd", emptyList()) {
+object Pwd : Command {
     override fun execute(input: String): String {
         return pwd()
     }

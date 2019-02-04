@@ -2,6 +2,7 @@ package ru.iisuslik.cli
 
 import java.io.File
 
+
 fun catFiles(fileNames: List<String>): String {
     val stringBuilder = StringBuilder()
     for (fileName in fileNames) {
@@ -18,7 +19,9 @@ fun wcFiles(fileNames: List<String>): String {
     return "WC FILES $fileNames"
 }
 
-fun executeCommand(name: String, args: List<String>): String {
+fun executeCommand(name: String, args: List<String>, input: String): String {
     val process = Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
-    return "UNKNOW COMMAND $name"
+    process.outputStream.bufferedWriter().write(input)
+    process.outputStream.close()
+    return process.inputStream.bufferedReader().readText()
 }

@@ -8,9 +8,11 @@ fun main(args: Array<String>) {
         print(":~$ ")
         val nextLine = readLine() ?: return
         val statement = parser.parse(nextLine)
-        val status = executor.execute(statement)
+        val (result, status) = executor.execute(statement)
         if (status == Executor.Status.EXIT) {
             break
+        } else {
+            println(result)
         }
     }
 }

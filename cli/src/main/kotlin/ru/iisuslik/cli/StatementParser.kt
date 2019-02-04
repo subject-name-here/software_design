@@ -1,4 +1,5 @@
 package ru.iisuslik.cli
+
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 
@@ -11,6 +12,10 @@ class StatementParser(val varsContainer: VarsContainer) {
     }
 
     fun substitution(statement: String): String {
-        return statement.replace(Regex("\\$[A-Za-z0-9]+")) { it: MatchResult -> varsContainer.get(it.value)}
+        val oneSpace = statement.replace("\\s+".toRegex(), " ")
+        return oneSpace.replace("\\$[A-Za-z0-9]+".toRegex()) {
+            val varName = it.value
+            varsContainer.get(varName.subSequence(1 until varName.length).toString())
+        }
     }
 }
