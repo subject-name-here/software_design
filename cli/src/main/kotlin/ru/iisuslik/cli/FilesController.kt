@@ -1,12 +1,18 @@
 package ru.iisuslik.cli
 
 import java.io.File
+import java.io.IOException
 
 // Returns content of all files in list
 fun catFiles(fileNames: List<String>): String {
     val stringBuilder = StringBuilder()
     for (fileName in fileNames) {
-        stringBuilder.append(File(fileName).readText())
+        val file = File(fileName)
+        if (!file.exists()) {
+            println("File \"$fileName\" doesn't exists")
+            continue
+        }
+        stringBuilder.append(file.readText())
     }
     return stringBuilder.toString()
 }
@@ -31,7 +37,12 @@ fun wcFiles(fileNames: List<String>): String {
     var totalWordsCount = 0
     var totalSymbolsCount = 0
     for (fileName in fileNames) {
-        val fileText = File(fileName).readText()
+        val file = File(fileName)
+        if (!file.exists()) {
+            println("File \"$fileName\" doesn't exists")
+            continue
+        }
+        val fileText = file.readText()
         val (linesCount, wordsCount, symbolsCount) = wcInput(fileText)
         stringBuilder.append("$fileName: $linesCount $wordsCount $symbolsCount")
         if (fileNames.size > 1) {
@@ -48,9 +59,15 @@ fun wcFiles(fileNames: List<String>): String {
     return stringBuilder.toString()
 }
 
+class CommandNotFoundException(message: String): Exception(message)
+
 // Executes external command
 fun executeCommand(name: String, args: List<String>, input: String): String {
-    val process = Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
+    val process = try {
+        Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
+    } catch (e: IOException) {
+        throw CommandNotFoundException(name)
+    }
     process.outputStream.bufferedWriter().write(input)
     process.outputStream.close()
     process.waitFor()

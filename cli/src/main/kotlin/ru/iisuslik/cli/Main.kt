@@ -1,5 +1,8 @@
 package ru.iisuslik.cli
 
+import org.antlr.v4.runtime.RecognitionException
+import java.lang.IllegalStateException
+
 // main function
 fun main() {
     val varsContainer = VarsContainer()
@@ -11,12 +14,20 @@ fun main() {
         if (nextLine == "") {
             continue
         }
-        val statement = parser.parse(nextLine)
-        val (result, status) = executor.execute(statement)
-        if (status == Executor.Status.EXIT) {
-            break
-        } else {
-            println(result)
+        try {
+            val statement = parser.parse(nextLine)
+            val (result, status) = executor.execute(statement)
+            if (status == Executor.Status.EXIT) {
+                break
+            } else {
+                println(result)
+            }
+        } catch (e: RecognitionException) {
+            println("Parsing error")
+        } catch (e: IllegalStateException) {
+            println("Parsing error")
+        } catch (e: CommandNotFoundException) {
+            println("Command not found: ${e.message}")
         }
     }
 }
