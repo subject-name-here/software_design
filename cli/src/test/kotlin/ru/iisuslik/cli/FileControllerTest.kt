@@ -1,29 +1,13 @@
 package ru.iisuslik.cli
 
-import org.junit.AfterClass
 import org.junit.Assert.*
 import org.junit.Test
-import org.junit.BeforeClass
 import java.io.File
 
-class FileControllerTest {
-    companion object {
-        @BeforeClass
-        @JvmStatic
-        fun createFiles() {
-            createTestFile("file1", "content1")
-            createTestFile("file2", "content2")
-            createTestFile("file3", "two words")
-        }
 
-        @AfterClass
-        @JvmStatic
-        fun deleteFiles() {
-            deleteTestsFile("file1")
-            deleteTestsFile("file2")
-            deleteTestsFile("file3")
-        }
-    }
+fun getRealFileName(name: String) = "src${File.separator}test${File.separator}resources${File.separator}$name"
+
+class FileControllerTest {
 
     @Test
     fun pwdWorks() {
