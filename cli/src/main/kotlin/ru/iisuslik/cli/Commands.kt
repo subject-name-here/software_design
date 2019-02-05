@@ -1,10 +1,13 @@
 package ru.iisuslik.cli
 
 interface Statement {
+    // Execute command with context
     fun execute(varsContainer: VarsContainer): String
+    // Get command status
     fun status(): Executor.Status
 }
 
+// Representation of assignment command (a="kek")
 data class Assignment(val name: String, val value: String) : Statement {
     override fun status() = Executor.Status.CONTINUE
 
@@ -14,6 +17,7 @@ data class Assignment(val name: String, val value: String) : Statement {
     }
 }
 
+// Contains list of commands, divided by pipes
 data class Commands(val commands: List<Command>) : Statement {
     override fun status() = if (commands.size == 1 && commands.first() is Exit)
         Executor.Status.EXIT
@@ -30,6 +34,7 @@ data class Commands(val commands: List<Command>) : Statement {
 
 interface Command {
     companion object {
+        // Uses standard commands if we can, otherwise use external command
         @JvmStatic
         fun build(name: String, args: List<String>): Command {
             return when (name) {
@@ -55,6 +60,7 @@ data class Echo(val args: List<String>) : Command {
 
 data class Wc(val args: List<String>) : Command {
     override fun execute(input: String): String {
+        // ignoring input if args are not empty
         return if (args.isEmpty()) {
             val (linesCount, wordsCount, symbolsCount) = wcInput(input)
             "$linesCount $wordsCount $symbolsCount"
@@ -66,10 +72,11 @@ data class Wc(val args: List<String>) : Command {
 
 data class Cat(val args: List<String>) : Command {
     override fun execute(input: String): String {
-        if (args.isEmpty()) {
-            return input
+        // ignoring input if args are not empty
+        return if (args.isEmpty()) {
+            input
         } else {
-            return catFiles(args)
+            catFiles(args)
         }
     }
 }

@@ -1,6 +1,7 @@
 package ru.iisuslik.cli
 
-fun main(args: Array<String>) {
+// main function
+fun main() {
     val varsContainer = VarsContainer()
     val executor = Executor(varsContainer)
     val parser = StatementParser(varsContainer)

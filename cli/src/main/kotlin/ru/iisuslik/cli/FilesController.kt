@@ -1,9 +1,8 @@
 package ru.iisuslik.cli
 
 import java.io.File
-import java.util.regex.Pattern
 
-
+// Returns content of all files in list
 fun catFiles(fileNames: List<String>): String {
     val stringBuilder = StringBuilder()
     for (fileName in fileNames) {
@@ -12,10 +11,12 @@ fun catFiles(fileNames: List<String>): String {
     return stringBuilder.toString()
 }
 
+// Returns current directory
 fun pwd(): String {
     return System.getProperty("user.dir")
 }
 
+// Returns count of lines, words and symbols in string
 fun wcInput(input: String): Triple<Int, Int, Int> {
     val linesCount = input.split("\n").size
     val wordsCount = input.split("[^\\w]+".toRegex()).size
@@ -23,6 +24,7 @@ fun wcInput(input: String): Triple<Int, Int, Int> {
     return Triple(linesCount, wordsCount, symbolsCount)
 }
 
+// Returns counts of lines, words and symbols in all files from list, last line - total information
 fun wcFiles(fileNames: List<String>): String {
     val stringBuilder = StringBuilder()
     var totalLinesCount = 0
@@ -46,6 +48,7 @@ fun wcFiles(fileNames: List<String>): String {
     return stringBuilder.toString()
 }
 
+// Executes external command
 fun executeCommand(name: String, args: List<String>, input: String): String {
     val process = Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
     process.outputStream.bufferedWriter().write(input)
