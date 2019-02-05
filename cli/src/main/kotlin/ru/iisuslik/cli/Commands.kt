@@ -3,6 +3,7 @@ package ru.iisuslik.cli
 interface Statement {
     // Execute command with context
     fun execute(varsContainer: VarsContainer): String
+
     // Get command status
     fun status(): Executor.Status
 }

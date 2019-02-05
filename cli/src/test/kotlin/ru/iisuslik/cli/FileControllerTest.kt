@@ -39,7 +39,7 @@ class FileControllerTest {
     fun wcTwoFiles() {
         assertEquals(
             "${getRealFileName("file3")}: 1 2 9\n${getRealFileName("file1")}: 1 1 8\n" +
-            "total: 2 3 17",
+                    "total: 2 3 17",
             wcFiles(listOf(getRealFileName("file3"), getRealFileName("file1")))
         )
     }

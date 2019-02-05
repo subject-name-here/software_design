@@ -1,7 +1,6 @@
 package ru.iisuslik.cli
 
 import org.junit.Assert.*
-import org.junit.BeforeClass
 import org.junit.Test
 
 class ExecutorTest {
