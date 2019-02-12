@@ -1,5 +1,9 @@
 package ru.iisuslik.cli
 
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.default
+import com.xenomachina.argparser.mainBody
+
 interface Statement {
     // Execute command with context
     fun execute(varsContainer: VarsContainer): String
@@ -42,6 +46,7 @@ interface Command {
                 "echo" -> Echo(args)
                 "wc" -> Wc(args)
                 "cat" -> Cat(args)
+                "grep" -> Grep(args)
                 // Real bash doesn't care too if we pass any args to pwd or exit
                 "pwd" -> Pwd
                 "exit" -> Exit
@@ -79,6 +84,41 @@ data class Cat(val args: List<String>) : Command {
         } else {
             catFiles(args)
         }
+    }
+}
+
+data class Grep(val args: List<String>) : Command {
+    override fun execute(input: String): String {
+        val parsedArgs = GrepArgsParser(ArgParser(args.toTypedArray()))
+        val regex = getRegex(parsedArgs)
+        // ignoring input if args are not empty
+        return if (parsedArgs.files.isEmpty()) {
+            grepInput(input, regex, parsedArgs.linesCount)
+        } else {
+            grepFiles(parsedArgs.files, regex, parsedArgs.linesCount)
+        }
+    }
+
+    class GrepArgsParser(parser: ArgParser) {
+        val ignoringCaseSensivity by parser.flagging("-i", help = "Ignoring case sensitivity")
+        val searchingWords by parser.flagging("-w", help = "Searching full words")
+        val linesCount by parser.storing("-n", help = "Printing n lines") { toInt() }.default { 0 }
+        val regex by parser.positional("REGEX", help = "Regex or just a string to find")
+        val files by parser.positionalList("FILE", help = "Source files"). default { emptyList()}
+    }
+
+    private fun getRegex(parsedArgs: GrepArgsParser): Regex {
+        val regexString = if (parsedArgs.searchingWords) {
+            "(\\b|^)${parsedArgs.regex}(\\b|$)"
+        } else {
+            parsedArgs.regex
+        }
+        return if (parsedArgs.ignoringCaseSensivity) {
+            regexString.toRegex(RegexOption.IGNORE_CASE)
+        } else {
+            regexString.toRegex()
+        }
+
     }
 }
 

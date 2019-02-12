@@ -59,7 +59,7 @@ fun wcFiles(fileNames: List<String>): String {
     return stringBuilder.toString()
 }
 
-class CommandNotFoundException(message: String): Exception(message)
+class CommandNotFoundException(message: String) : Exception(message)
 
 // Executes external command
 fun executeCommand(name: String, args: List<String>, input: String): String {
@@ -73,4 +73,34 @@ fun executeCommand(name: String, args: List<String>, input: String): String {
     process.waitFor()
     print(process.errorStream.bufferedReader().readLine() ?: "")
     return process.inputStream.bufferedReader().readText()
+}
+
+fun grepInput(input: String, regex: Regex, linesCount: Int): String {
+    val stringBuilder = StringBuilder()
+    var curCount = 0
+    for (line in input.split('\n')) {
+        if (regex.containsMatchIn(line)) {
+            stringBuilder.append(line + '\n')
+            curCount = linesCount
+        } else if (curCount > 0) {
+            stringBuilder.append(line + '\n')
+            curCount--
+        }
+    }
+    return stringBuilder.toString()
+}
+
+fun grepFiles(fileNames: List<String>, regex: Regex, linesCount: Int): String {
+    val stringBuilder = StringBuilder()
+    for (fileName in fileNames) {
+        val file = File(fileName)
+        if (!file.exists()) {
+            println("File \"$fileName\" doesn't exists")
+            continue
+        }
+        val fileText = file.readText()
+        val grepResult = grepInput(fileText, regex, linesCount)
+        stringBuilder.append(grepResult)
+    }
+    return stringBuilder.toString()
 }

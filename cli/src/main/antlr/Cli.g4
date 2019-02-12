@@ -33,11 +33,11 @@ arg returns [String value]
     ;
 
 word
-    :   (LETTER | DIGIT | '.' | '-')+
+    :   (LETTER | DIGIT | '.' | '-' | '/')+
     ;
 
 string
-    : (LETTER | DIGIT | '.' | '-' | ' ' | '!' | '\t' | '|')+
+    : (LETTER | DIGIT | '.' | '-' | ' ' | '!' | '\t' | '|' | '\\' | '(' | ')' | '*' | '[' | ']' | '+' | '^' | '$')+
     ;
 
 DIGIT

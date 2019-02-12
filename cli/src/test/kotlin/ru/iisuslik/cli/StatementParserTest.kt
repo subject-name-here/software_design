@@ -35,6 +35,11 @@ class StatementParserTest {
     }
 
     @Test
+    fun parseGrep() {
+        assertEquals(getStatement(Grep(listOf("kek", "lol"))), parser.parse("grep kek lol"))
+    }
+
+    @Test
     fun parsePwd() {
         assertEquals(getStatement(Pwd), parser.parse("pwd"))
     }

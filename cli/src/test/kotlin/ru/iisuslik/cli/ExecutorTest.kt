@@ -36,32 +36,124 @@ class ExecutorTest {
 
     @Test
     fun catInput() {
-        assertEquals("kek", executor.runCommands(listOf(Echo(listOf("kek")),
-            Cat(emptyList()))))
+        assertEquals(
+            "kek", executor.runCommands(
+                listOf(
+                    Echo(listOf("kek")),
+                    Cat(emptyList())
+                )
+            )
+        )
     }
 
     @Test
     fun catInputIgnore() {
-        assertEquals("content1", executor.runCommands(listOf(Echo(listOf("kek")),
-            Cat(listOf(getRealFileName("file1"))))))
+        assertEquals(
+            "content1", executor.runCommands(
+                listOf(
+                    Echo(listOf("kek")),
+                    Cat(listOf(getRealFileName("file1")))
+                )
+            )
+        )
     }
 
     @Test
     fun wcSimple() {
-        assertEquals("${getRealFileName("file1")}: 1 1 8",
-            executor.runCommands(listOf(Wc(listOf(getRealFileName("file1"))))))
+        assertEquals(
+            "${getRealFileName("file1")}: 1 1 8",
+            executor.runCommands(listOf(Wc(listOf(getRealFileName("file1")))))
+        )
     }
 
     @Test
     fun wcInput() {
-        assertEquals("1 1 3", executor.runCommands(listOf(Echo(listOf("kek")),
-            Wc(emptyList()))))
+        assertEquals(
+            "1 1 3", executor.runCommands(
+                listOf(
+                    Echo(listOf("kek")),
+                    Wc(emptyList())
+                )
+            )
+        )
     }
 
     @Test
     fun wcInputIgnore() {
-        assertEquals("${getRealFileName("file1")}: 1 1 8",
-            executor.runCommands(listOf(Echo(listOf("kek")),
-            Wc(listOf(getRealFileName("file1"))))))
+        assertEquals(
+            "${getRealFileName("file1")}: 1 1 8",
+            executor.runCommands(
+                listOf(
+                    Echo(listOf("kek")),
+                    Wc(listOf(getRealFileName("file1")))
+                )
+            )
+        )
+    }
+
+    @Test
+    fun grepSimple() {
+        assertEquals(
+            "2\n",
+            executor.runCommands(listOf(Grep(listOf("2", getRealFileName("file4")))))
+        )
+    }
+
+    @Test
+    fun grepInput() {
+        assertEquals(
+            "1\n", executor.runCommands(
+                listOf(
+                    Echo(listOf("1")),
+                    Grep(listOf("1"))
+                )
+            )
+        )
+    }
+
+    @Test
+    fun grepInputIgnore() {
+        assertEquals(
+            "2\n", executor.runCommands(
+                listOf(
+                    Echo(listOf("1")),
+                    Grep(listOf("2", getRealFileName("file4")))
+                )
+            )
+        )
+    }
+
+    @Test
+    fun grepIgnoreCase() {
+        assertEquals(
+            "A\n", executor.runCommands(
+                listOf(
+                    Echo(listOf("A")),
+                    Grep(listOf("-i", "a"))
+                )
+            )
+        )
+    }
+
+    @Test
+    fun grepFindWord() {
+        assertEquals(
+            "kek find me lol\n", executor.runCommands(
+                listOf(
+                    Grep(listOf("-w", "find", getRealFileName("file4")))
+                )
+            )
+        )
+    }
+
+    @Test
+    fun grepMoreLines() {
+        assertEquals(
+            "kek find me lol\nkeeeeek\n", executor.runCommands(
+                listOf(
+                    Grep(listOf("-w", "-n", "1", "find", getRealFileName("file4")))
+                )
+            )
+        )
     }
 }
