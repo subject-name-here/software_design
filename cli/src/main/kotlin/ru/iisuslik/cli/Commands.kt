@@ -42,6 +42,8 @@ interface Command {
                 "echo" -> Echo(args)
                 "wc" -> Wc(args)
                 "cat" -> Cat(args)
+                "cd" -> Cd(args)
+                "ls" -> Ls(args)
                 // Real bash doesn't care too if we pass any args to pwd or exit
                 "pwd" -> Pwd
                 "exit" -> Exit
@@ -97,5 +99,24 @@ object Exit : Command {
 object Pwd : Command {
     override fun execute(input: String): String {
         return pwd()
+    }
+}
+
+data class Cd(val args: List<String>) : Command {
+    override fun execute(input: String): String {
+        return if(args.isEmpty()) {
+            cd(listOf(System.getProperty("user.home")))
+        } else {
+            cd(args)
+        }
+    }
+}
+data class Ls(val args: List<String>) : Command {
+    override fun execute(input: String): String {
+        return if(args.isEmpty()) {
+            ls(listOf(pwd()))
+        } else {
+            ls(args)
+        }
     }
 }

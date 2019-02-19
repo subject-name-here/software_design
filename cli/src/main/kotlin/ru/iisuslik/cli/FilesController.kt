@@ -7,7 +7,7 @@ import java.io.IOException
 fun catFiles(fileNames: List<String>): String {
     val stringBuilder = StringBuilder()
     for (fileName in fileNames) {
-        val file = File(fileName)
+        val file = createFile(fileName)
         if (!file.exists()) {
             println("File \"$fileName\" doesn't exists")
             continue
@@ -37,7 +37,7 @@ fun wcFiles(fileNames: List<String>): String {
     var totalWordsCount = 0
     var totalSymbolsCount = 0
     for (fileName in fileNames) {
-        val file = File(fileName)
+        val file = createFile(fileName)
         if (!file.exists()) {
             println("File \"$fileName\" doesn't exists")
             continue
@@ -64,7 +64,7 @@ class CommandNotFoundException(message: String): Exception(message)
 // Executes external command
 fun executeCommand(name: String, args: List<String>, input: String): String {
     val process = try {
-        Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
+        Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}", emptyArray(), File(pwd()))
     } catch (e: IOException) {
         throw CommandNotFoundException(name)
     }
@@ -73,4 +73,29 @@ fun executeCommand(name: String, args: List<String>, input: String): String {
     process.waitFor()
     print(process.errorStream.bufferedReader().readLine() ?: "")
     return process.inputStream.bufferedReader().readText()
+}
+
+// Changes current directory (ignores all arguments but first)
+fun cd(fileNames: List<String>): String {
+    val dir = createFile(fileNames[0])
+    return if (dir.exists() && dir.isDirectory) {
+        System.setProperty("user.dir", dir.canonicalPath)
+        ""
+    } else {
+        "Directory does not exists!"
+    }
+}
+
+// Returns content list of current directory (ignores all arguments but first)
+fun ls(fileNames: List<String>): String {
+    val dir = createFile(fileNames[0])
+    return if (dir.exists() && dir.isDirectory) {
+        return dir.listFiles().map { it.name }.sorted().joinToString("\n")
+    } else {
+        "Directory does not exists!"
+    }
+}
+
+fun createFile(filename: String): File {
+    return File(filename).absoluteFile
 }
