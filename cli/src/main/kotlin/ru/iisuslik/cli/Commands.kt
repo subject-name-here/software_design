@@ -34,22 +34,6 @@ data class Commands(val commands: List<Command>) : Statement {
 }
 
 interface Command {
-    companion object {
-        // Uses standard commands if we can, otherwise use external command
-        @JvmStatic
-        fun build(name: String, args: List<String>): Command {
-            return when (name) {
-                "echo" -> Echo(args)
-                "wc" -> Wc(args)
-                "cat" -> Cat(args)
-                // Real bash doesn't care too if we pass any args to pwd or exit
-                "pwd" -> Pwd
-                "exit" -> Exit
-                else -> External(name, args)
-            }
-        }
-    }
-
     fun execute(input: String): String
 }
 

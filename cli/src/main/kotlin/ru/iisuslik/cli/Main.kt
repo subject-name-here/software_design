@@ -28,6 +28,8 @@ fun main() {
             println("Parsing error")
         } catch (e: CommandNotFoundException) {
             println("Command not found: ${e.message}")
+        } catch (e: ErrorInCommandException) {
+
         }
     }
 }

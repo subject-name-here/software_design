@@ -24,8 +24,8 @@ fun pwd(): String {
 
 // Returns count of lines, words and symbols in string
 fun wcInput(input: String): Triple<Int, Int, Int> {
-    val linesCount = input.split("\n").size
-    val wordsCount = input.split("[^\\w]+".toRegex()).size
+    val linesCount = input.split(System.lineSeparator()).size
+    val wordsCount = input.split("[\\s]+".toRegex()).size
     val symbolsCount = input.length
     return Triple(linesCount, wordsCount, symbolsCount)
 }
@@ -39,14 +39,13 @@ fun wcFiles(fileNames: List<String>): String {
     for (fileName in fileNames) {
         val file = File(fileName)
         if (!file.exists()) {
-            println("File \"$fileName\" doesn't exists")
-            continue
+            throw ErrorInCommandException("File \"$fileName\" doesn't exists")
         }
         val fileText = file.readText()
         val (linesCount, wordsCount, symbolsCount) = wcInput(fileText)
         stringBuilder.append("$fileName: $linesCount $wordsCount $symbolsCount")
         if (fileNames.size > 1) {
-            stringBuilder.append("\n")
+            stringBuilder.append(System.lineSeparator())
         }
         totalLinesCount += linesCount
         totalWordsCount += wordsCount
@@ -60,6 +59,7 @@ fun wcFiles(fileNames: List<String>): String {
 }
 
 class CommandNotFoundException(message: String): Exception(message)
+class ErrorInCommandException(message: String): Exception(message)
 
 // Executes external command
 fun executeCommand(name: String, args: List<String>, input: String): String {
@@ -70,7 +70,9 @@ fun executeCommand(name: String, args: List<String>, input: String): String {
     }
     process.outputStream.bufferedWriter().write(input)
     process.outputStream.close()
-    process.waitFor()
-    print(process.errorStream.bufferedReader().readLine() ?: "")
+    val errorCode = process.waitFor()
+    if (errorCode != 0) {
+        throw ErrorInCommandException(process.errorStream.bufferedReader().readLine() ?: "")
+    }
     return process.inputStream.bufferedReader().readText()
 }
