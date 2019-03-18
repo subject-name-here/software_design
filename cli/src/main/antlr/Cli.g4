@@ -41,7 +41,7 @@ string
     ;
 
 q1string
-    : (string_letter | '"')+
+    : (string_letter | '"' | '$')+
     ;
 
 q2string

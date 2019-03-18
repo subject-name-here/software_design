@@ -170,4 +170,12 @@ class StatementParserTest {
         val parser = StatementParser(container)
         assertEquals("'\$kek'", parser.substitution("'\$kek'"))
     }
+
+    @Test
+    fun echoDollar() {
+        assertEquals(
+            getStatement(Echo(listOf("a\$a"))),
+            parser.parse("echo 'a\$a'")
+        )
+    }
 }

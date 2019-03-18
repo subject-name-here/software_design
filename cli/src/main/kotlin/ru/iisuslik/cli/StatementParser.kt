@@ -3,11 +3,19 @@ package ru.iisuslik.cli
 import org.antlr.v4.runtime.BufferedTokenStream
 import org.antlr.v4.runtime.CharStreams
 
-// This class uses antlr to parse commands
+/**
+ * Class for parsing CLI statements
+ */
 class StatementParser(val varsContainer: VarsContainer) {
     private val builder = StringBuilder()
     private val currentInQuoteBuilder = StringBuilder()
 
+    /**
+     * Parses statement into special class
+     *
+     * @param statement string representation of statement
+     * @return statement class
+     */
     fun parse(statement: String): Statement {
         // Some preprocessing before parsing
         val substituted = substitution(statement)
@@ -16,7 +24,12 @@ class StatementParser(val varsContainer: VarsContainer) {
         return statementParser.statement().value
     }
 
-    // Replaces all \\s symbols into one " " and substitutes all vars from varsContainer
+    /**
+     * Replaces all \\s symbols into one " " and substitutes all vars from varsContainer
+     *
+     * @param statement
+     * @return substitution result
+     */
     fun substitution(statement: String): String {
         builder.clear()
         currentInQuoteBuilder.clear()
@@ -72,7 +85,9 @@ class StatementParser(val varsContainer: VarsContainer) {
 
 
     companion object {
-        // Uses standard commands if we can, otherwise use external command
+        /**
+         * Uses standard commands if we can, otherwise use external command
+         */
         @JvmStatic
         fun build(name: String, args: List<String>): Command {
             return when (name) {

@@ -3,7 +3,9 @@ package ru.iisuslik.cli
 import org.antlr.v4.runtime.RecognitionException
 import java.lang.IllegalStateException
 
-// main function
+/**
+ * Main CLI function with main cycle
+ */
 fun main() {
     val varsContainer = VarsContainer()
     val executor = Executor(varsContainer)
