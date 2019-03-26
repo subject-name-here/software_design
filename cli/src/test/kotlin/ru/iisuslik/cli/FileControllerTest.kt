@@ -11,19 +11,19 @@ class FileControllerTest {
 
     @Test
     fun pwdWorks() {
-        assertTrue(pwd().endsWith("${File.separator}software_design${File.separator}cli"))
+        assertTrue(pwd(Context()).endsWith("${File.separator}software_design${File.separator}cli"))
     }
 
     @Test
     fun catSimple() {
-        assertEquals("content1", catFiles(listOf(getRealFileName("file1"))))
+        assertEquals("content1", catFiles(listOf(getRealFileName("file1")), Context()))
     }
 
     @Test
     fun catTwoFiles() {
         assertEquals(
             "content1content2",
-            catFiles(listOf(getRealFileName("file1"), getRealFileName("file2")))
+            catFiles(listOf(getRealFileName("file1"), getRealFileName("file2")), Context())
         )
     }
 
@@ -31,7 +31,7 @@ class FileControllerTest {
     fun wc() {
         assertEquals(
             "${getRealFileName("file3")}: 1 2 9",
-            wcFiles(listOf(getRealFileName("file3")))
+            wcFiles(listOf(getRealFileName("file3")), Context())
         )
     }
 
@@ -40,7 +40,7 @@ class FileControllerTest {
         assertEquals(
             "${getRealFileName("file3")}: 1 2 9${System.lineSeparator()}" +
                     "${getRealFileName("file1")}: 1 1 8${System.lineSeparator()}total: 2 3 17",
-            wcFiles(listOf(getRealFileName("file3"), getRealFileName("file1")))
+            wcFiles(listOf(getRealFileName("file3"), getRealFileName("file1")), Context())
         )
     }
 }

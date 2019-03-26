@@ -3,7 +3,7 @@ package ru.iisuslik.cli
 /**
  * Class that can execute commands in context
  */
-class Executor(val varsContainer: VarsContainer) {
+class Executor(private val context: Context) {
     /**
      * EXIT status means that we have only 1 command - exit
      */
@@ -15,7 +15,7 @@ class Executor(val varsContainer: VarsContainer) {
      * @param statement statement to execute
      */
     fun execute(statement: Statement): Pair<String, Status> {
-        val result = statement.execute(varsContainer)
+        val result = statement.execute(context)
         return Pair(result, statement.status())
     }
 }

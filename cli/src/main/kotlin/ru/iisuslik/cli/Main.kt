@@ -7,9 +7,9 @@ import java.lang.IllegalStateException
  * Main CLI function with main cycle
  */
 fun main() {
-    val varsContainer = VarsContainer()
-    val executor = Executor(varsContainer)
-    val parser = StatementParser(varsContainer)
+    val context = Context()
+    val executor = Executor(context)
+    val parser = StatementParser(context)
     while (true) {
         print(":~$ ")
         val nextLine = readLine() ?: return
@@ -31,7 +31,7 @@ fun main() {
         } catch (e: CommandNotFoundException) {
             println("Command not found: ${e.message}")
         } catch (e: ErrorInCommandException) {
-
+            println("Error: ${e.message}")
         }
     }
 }

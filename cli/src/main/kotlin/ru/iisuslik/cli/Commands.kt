@@ -7,10 +7,10 @@ interface Statement {
     /**
      * Executes statement in context
      *
-     * @param varsContainer context(variables values)
+     * @param context context(variables values, current directory)
      * @return execution result
      */
-    fun execute(varsContainer: VarsContainer): String
+    fun execute(context: Context): String
 
 
     /**
@@ -31,8 +31,8 @@ interface Statement {
 data class Assignment(val name: String, val value: String) : Statement {
     override fun status() = Executor.Status.CONTINUE
 
-    override fun execute(varsContainer: VarsContainer): String {
-        varsContainer.add(name, value)
+    override fun execute(context: Context): String {
+        context.varsContainer.add(name, value)
         return ""
     }
 }
@@ -47,11 +47,18 @@ data class Commands(val commands: List<Command>) : Statement {
         Executor.Status.EXIT
     else Executor.Status.CONTINUE
 
-    override fun execute(varsContainer: VarsContainer): String {
+    override fun execute(context: Context): String {
         var result = ""
-        for (command in commands) {
-            result = command.execute(result)
+
+        if (commands.size == 1) {
+            result = commands[0].execute(result, context)
+        } else {
+            for (command in commands) {
+                result = command.execute(result, Context(context))
+            }
         }
+
+
         return result
     }
 }
@@ -64,9 +71,10 @@ interface Command {
      * Executes command
      *
      * @param input string (e.g. "echo kek | cat", "kek" is input for cat)
+     * @param context context in which command is exectued
      * @return execution result
      */
-    fun execute(input: String): String
+    fun execute(input: String, context: Context): String
 }
 
 /**
@@ -76,7 +84,7 @@ interface Command {
  * @param args command arguments
  */
 data class Echo(val args: List<String>) : Command {
-    override fun execute(input: String): String {
+    override fun execute(input: String, context: Context): String {
         return args.joinToString(" ")
     }
 }
@@ -89,13 +97,13 @@ data class Echo(val args: List<String>) : Command {
  * @param args command arguments
  */
 data class Wc(val args: List<String>) : Command {
-    override fun execute(input: String): String {
+    override fun execute(input: String, context: Context): String {
         // ignoring input if args are not empty
         return if (args.isEmpty()) {
             val (linesCount, wordsCount, symbolsCount) = wcInput(input)
             "$linesCount $wordsCount $symbolsCount"
         } else {
-            wcFiles(args)
+            wcFiles(args, context)
         }
     }
 }
@@ -108,12 +116,12 @@ data class Wc(val args: List<String>) : Command {
  * @param args command arguments
  */
 data class Cat(val args: List<String>) : Command {
-    override fun execute(input: String): String {
+    override fun execute(input: String, context: Context): String {
         // ignoring input if args are not empty
         return if (args.isEmpty()) {
             input
         } else {
-            catFiles(args)
+            catFiles(args, context)
         }
     }
 }
@@ -126,8 +134,8 @@ data class Cat(val args: List<String>) : Command {
  * @param args command arguments
  */
 data class External(val name: String, val args: List<String>) : Command {
-    override fun execute(input: String): String {
-        return executeCommand(name, args, input)
+    override fun execute(input: String, context: Context): String {
+        return executeCommand(name, args, input, context)
     }
 }
 
@@ -137,7 +145,7 @@ data class External(val name: String, val args: List<String>) : Command {
  * Execution triggers exit from cli
  */
 object Exit : Command {
-    override fun execute(input: String): String {
+    override fun execute(input: String, context: Context): String {
         return ""
     }
 }
@@ -148,26 +156,18 @@ object Exit : Command {
  * Execution returns current pwd
  */
 object Pwd : Command {
-    override fun execute(input: String): String {
-        return pwd()
+    override fun execute(input: String, context: Context): String {
+        return pwd(context)
     }
 }
 
 data class Cd(val args: List<String>) : Command {
-    override fun execute(input: String): String {
-        return if(args.isEmpty()) {
-            cd(listOf(System.getProperty("user.home")))
-        } else {
-            cd(args)
-        }
+    override fun execute(input: String, context: Context): String {
+        return cd(args, context)
     }
 }
 data class Ls(val args: List<String>) : Command {
-    override fun execute(input: String): String {
-        return if(args.isEmpty()) {
-            ls(listOf(pwd()))
-        } else {
-            ls(args)
-        }
+    override fun execute(input: String, context: Context): String {
+        return ls(args, context)
     }
 }

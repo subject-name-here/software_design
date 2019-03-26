@@ -17,4 +17,10 @@ class VarsContainer {
      * Returns var value or empty string if it doesn't exist
      */
     fun get(name: String) = variables[name] ?: ""
+
+    fun copyTo(varsContainer: VarsContainer) {
+        for (pair in variables) {
+            varsContainer.add(pair.key, pair.value)
+        }
+    }
 }
