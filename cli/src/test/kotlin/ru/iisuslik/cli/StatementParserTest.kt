@@ -5,7 +5,7 @@ import org.junit.Assert.*
 
 class StatementParserTest {
 
-    private val parser = StatementParser(VarsContainer())
+    private val parser = StatementParser(Context())
 
     private fun getStatement(vararg commands: Command) = Commands(commands.toList())
 
@@ -63,33 +63,33 @@ class StatementParserTest {
 
     @Test
     fun assignment() {
-        val container = VarsContainer()
-        val parser = StatementParser(container)
+        val context = Context()
+        val parser = StatementParser(context)
         assertEquals(Assignment("kek", "lol"), parser.parse("kek=lol"))
     }
 
     @Test
     fun substitutionEasy() {
-        val container = VarsContainer()
-        container.add("kek", "lol")
-        val parser = StatementParser(container)
+        val context = Context()
+        context.varsContainer.add("kek", "lol")
+        val parser = StatementParser(context)
         assertEquals("lol", parser.substitution("\$kek"))
     }
 
     @Test
     fun twoDifferentSubstitutions() {
-        val container = VarsContainer()
-        container.add("kek", "lol")
-        container.add("such", "wow")
-        val parser = StatementParser(container)
+        val context = Context()
+        context.varsContainer.add("kek", "lol")
+        context.varsContainer.add("such", "wow")
+        val parser = StatementParser(context)
         assertEquals("lol wow wow", parser.substitution("\$kek \$such wow"))
     }
 
     @Test
     fun twoSimilarSubstitutions() {
-        val c = VarsContainer()
-        c.add("kek", "lol")
-        val parser = StatementParser(c)
+        val context = Context()
+        context.varsContainer.add("kek", "lol")
+        val parser = StatementParser(context)
         assertEquals(
             "lol lol such text lol wow",
             parser.substitution("lol \$kek such text \$kek wow")
@@ -98,8 +98,8 @@ class StatementParserTest {
 
     @Test
     fun substitutionsNotExists() {
-        val c = VarsContainer()
-        val parser = StatementParser(c)
+        val context = Context()
+        val parser = StatementParser(context)
         assertEquals("", parser.substitution("\$kek"))
     }
 
@@ -157,17 +157,17 @@ class StatementParserTest {
 
     @Test
     fun substitutionDoubleQuotes() {
-        val container = VarsContainer()
-        container.add("kek", "lol")
-        val parser = StatementParser(container)
+        val context = Context()
+        context.varsContainer.add("kek", "lol")
+        val parser = StatementParser(context)
         assertEquals("\"lol\"", parser.substitution("\"\$kek\""))
     }
 
     @Test
     fun substitutionQuotesNotHappening() {
-        val container = VarsContainer()
-        container.add("kek", "lol")
-        val parser = StatementParser(container)
+        val context = Context()
+        context.varsContainer.add("kek", "lol")
+        val parser = StatementParser(context)
         assertEquals("'\$kek'", parser.substitution("'\$kek'"))
     }
 

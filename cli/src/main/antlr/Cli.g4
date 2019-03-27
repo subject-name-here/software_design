@@ -33,7 +33,7 @@ arg returns [String value]
     ;
 
 word
-    :   (LETTER | DIGIT | '.' | '-')+
+    :   (LETTER | DIGIT | '.' | '-' | '/' | '\\' | '_' | FILENAME_ADDITIONAL_SYMBOLS)+
     ;
 
 string
@@ -49,12 +49,16 @@ q2string
     ;
 
 string_letter
-    : LETTER | DIGIT | '.' | '-' | ' ' | '!' | '\t' | '|'
+    : LETTER | DIGIT | '.' | '-' | ' ' | '!' | '\t' | '|' | FILENAME_ADDITIONAL_SYMBOLS
     ;
 
 DIGIT
     : '0'..'9'
     ;
 LETTER: ('a'..'z') | ('A'..'Z');
+
+FILENAME_ADDITIONAL_SYMBOLS
+    : '/' | '\\' | '_'
+    ;
 
 SPLIT: ' ';

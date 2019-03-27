@@ -8,10 +8,10 @@ import java.io.IOException
  *
  * @param fileNames list of files
  */
-fun catFiles(fileNames: List<String>): String {
+fun catFiles(fileNames: List<String>, context: Context): String {
     val stringBuilder = StringBuilder()
     for (fileName in fileNames) {
-        val file = File(fileName)
+        val file = createFile(fileName, context)
         if (!file.exists()) {
             println("File \"$fileName\" doesn't exists")
             continue
@@ -24,8 +24,8 @@ fun catFiles(fileNames: List<String>): String {
 /**
  * Returns current directory
  */
-fun pwd(): String {
-    return System.getProperty("user.dir")
+fun pwd(context: Context): String {
+    return context.currentDirectory
 }
 
 /**
@@ -46,13 +46,13 @@ fun wcInput(input: String): Triple<Int, Int, Int> {
  *
  * @param fileNames list of files
  */
-fun wcFiles(fileNames: List<String>): String {
+fun wcFiles(fileNames: List<String>, context: Context): String {
     val stringBuilder = StringBuilder()
     var totalLinesCount = 0
     var totalWordsCount = 0
     var totalSymbolsCount = 0
     for (fileName in fileNames) {
-        val file = File(fileName)
+        val file = createFile(fileName, context)
         if (!file.exists()) {
             throw ErrorInCommandException("File \"$fileName\" doesn't exists")
         }
@@ -89,9 +89,9 @@ class ErrorInCommandException(message: String): Exception(message)
  * @param args arguments
  * @param input input
  */
-fun executeCommand(name: String, args: List<String>, input: String): String {
+fun executeCommand(name: String, args: List<String>, input: String, context: Context): String {
     val process = try {
-        Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}")
+        Runtime.getRuntime().exec("$name ${args.joinToString(separator = " ")}", emptyArray(), File(context.currentDirectory))
     } catch (e: IOException) {
         throw CommandNotFoundException(name)
     }
@@ -102,4 +102,55 @@ fun executeCommand(name: String, args: List<String>, input: String): String {
         throw ErrorInCommandException(process.errorStream.bufferedReader().readLine() ?: "")
     }
     return process.inputStream.bufferedReader().readText()
+}
+
+/**
+ * Changes current directory
+ * @param fileNames directory to list files in or nothing if we want to list files in home directory
+ * @param context context in which command is executed
+ * @throws ErrorInCommandException if more than one argument given
+ */
+fun cd(fileNames: List<String>, context: Context): String {
+    if (fileNames.size > 1) {
+        throw ErrorInCommandException("More than one argument given to cd!")
+    }
+
+    val directory = fileNames.getOrElse(0) { context.userHome }
+    val file = createFile(directory, context)
+
+    return if (file.exists() && file.isDirectory) {
+        context.currentDirectory = file.canonicalPath
+        ""
+    } else {
+        throw ErrorInCommandException("Directory \"$directory\" doesn't exists")
+    }
+}
+
+/**
+ * Returns content list of directory
+ * @param fileNames directory to list files in or nothing if we want to list files in current directory
+ * @param context context in which command is executed
+ * @throws ErrorInCommandException if more than one argument given
+ */
+fun ls(fileNames: List<String>, context: Context): String {
+    if (fileNames.size > 1) {
+        throw ErrorInCommandException("More than one argument given to ls!")
+    }
+
+    val directory = fileNames.getOrElse(0) { context.currentDirectory }
+    val file = createFile(directory, context)
+    return if (file.exists() && file.isDirectory) {
+        file.listFiles().map { it.name }.sorted().joinToString(System.lineSeparator())
+    } else {
+        throw ErrorInCommandException("Directory \"$directory\" doesn't exists")
+    }
+}
+
+/**
+ * Creates File by given filename. If filename is relative, it is resolved based on context current directory
+ * @param fileName name of file we want to create
+ * @param context context from which we want to use current directory
+ */
+fun createFile(filename: String, context: Context): File {
+    return File(context.currentDirectory).resolve(filename)
 }

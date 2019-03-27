@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.CharStreams
 /**
  * Class for parsing CLI statements
  */
-class StatementParser(val varsContainer: VarsContainer) {
+class StatementParser(val context: Context) {
     private val builder = StringBuilder()
     private val currentInQuoteBuilder = StringBuilder()
 
@@ -80,7 +80,7 @@ class StatementParser(val varsContainer: VarsContainer) {
 
     private fun substitute(s: String) = s.replace("\\$[A-Za-z0-9]+".toRegex()) {
         val varName = it.value
-        varsContainer.get(varName.subSequence(1 until varName.length).toString())
+        context.varsContainer.get(varName.subSequence(1 until varName.length).toString())
     }
 
 
@@ -94,6 +94,8 @@ class StatementParser(val varsContainer: VarsContainer) {
                 "echo" -> Echo(args)
                 "wc" -> Wc(args)
                 "cat" -> Cat(args)
+                "cd" -> Cd(args)
+                "ls" -> Ls(args)
                 // Real bash doesn't care too if we pass any args to pwd or exit
                 "pwd" -> Pwd
                 "exit" -> Exit
