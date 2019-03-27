@@ -18,6 +18,9 @@ class VarsContainer {
      */
     fun get(name: String) = variables[name] ?: ""
 
+    /**
+     * Copies variables from this container to given container.
+     */
     fun copyTo(varsContainer: VarsContainer) {
         for (pair in variables) {
             varsContainer.add(pair.key, pair.value)

@@ -146,6 +146,11 @@ fun ls(fileNames: List<String>, context: Context): String {
     }
 }
 
+/**
+ * Creates File by given filename. If filename is relative, it is resolved based on context current directory
+ * @param fileName name of file we want to create
+ * @param context context from which we want to use current directory
+ */
 fun createFile(filename: String, context: Context): File {
     return File(context.currentDirectory).resolve(filename)
 }

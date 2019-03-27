@@ -2,6 +2,8 @@ package ru.iisuslik.cli
 
 /**
  * Class that can execute commands in context
+ *
+ * @param context context in which executor works and executes commands
  */
 class Executor(private val context: Context) {
     /**

@@ -161,11 +161,26 @@ object Pwd : Command {
     }
 }
 
+/**
+ * Representation of cd command
+ *
+ * Execution changes directory in given context
+ *
+ * @param args command arguments
+ */
 data class Cd(val args: List<String>) : Command {
     override fun execute(input: String, context: Context): String {
         return cd(args, context)
     }
 }
+
+/**
+ * Representation of ls command
+ *
+ * Execution lists content in given directory (or current, if none given)
+ *
+ * @param args command arguments
+ */
 data class Ls(val args: List<String>) : Command {
     override fun execute(input: String, context: Context): String {
         return ls(args, context)
